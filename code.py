@@ -1,3 +1,10 @@
+from datetime import datetime
+import MySQLdb
+conn = MySQLdb.connect(host= "localhost",
+                  user="system",
+                  passwd="rmi",
+                  db="xe")
+x = conn.cursor()
 import serial ,requests, json, time
 arduino = serial.Serial('COM1', 9600, timeout=.1)
 time.sleep(1)
@@ -11,5 +18,11 @@ for i in range(0,l):
         j = text[i + 5]
         print (j)
         arduino.write(j.encode())
+        try:
+        x.execute("""INSERT INTO table1 (datetime_upd,tc) VALUES (?,?)""",(datetime.now(),j))
+        conn.commit()
+        except:
+        conn.rollback()
+        conn.close()
         break
 
